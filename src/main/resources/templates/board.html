@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+>
+<head>
+    <meta charset="UTF-8">
+    <title>게시판</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:hover {background-color: #f5f5f5;}
+        .text-center {
+            text-align: center;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            padding: 20px 0;
+        }
+
+        .pagination a {
+            color: black;
+            float: left;
+            padding: 8px 16px;
+            text-decoration: none;
+            transition: background-color .3s;
+            border: 1px solid #ddd; /* Gray */
+            margin: 0 4px;
+        }
+
+        .pagination a.active {
+            background-color: #4CAF50;
+            color: white;
+            border: 1px solid #4CAF50;
+        }
+
+        .pagination a:hover:not(.active) {background-color: #ddd;}
+        .create-button {
+            margin: 20px 0;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            float: right;
+        }
+        .create-button:hover {
+            background-color: #45a049;
+
+        }
+
+    </style>
+    <div th:replace="header :: link"></div>
+</head>
+<body>
+
+<table>
+    <div th:replace="header :: section"></div>
+    <thead>
+    <tr>
+        <th class="text-center">번호</th>
+        <th>제목</th>
+        <th class="text-center">작성자</th>
+        <th class="text-center">조회수</th>
+        <th class="text-center">작성일</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- 게시물 리스트 아이템 -->
+
+
+    <tr th:each = " board : ${boardList}" class="board-line" >
+        <td th:text = "${board.boardNumber}" class="text-center" id ="boardNumber" ></td>
+        <td th:text = "${board.title}" ></td>
+        <td th:text = "${board.id}" class="text-center"></td>
+        <td th:text = "${board.views}" class="text-center"></td>
+        <td th:text = "${board.registTime}" class="text-center"></td>
+    </tr>
+<!--    <tr>-->
+<!--        <td class="text-center">924</td>-->
+<!--        <td>2024년도 제1회 대한민국신소음공모전의 사용 의의와 ...</td>-->
+<!--        <td class="text-center">홍길동</td>-->
+<!--        <td class="text-center">510</td>-->
+<!--        <td class="text-center">2024-04-25</td>-->
+<!--    </tr>-->
+    <!-- 추가 게시물 리스트 아이템 -->
+    </tbody>
+
+</table>
+<div class="pagination">
+    <a href="#" th:unless="${page == 1}" th:href="@{/board(kind=${kind},page=${prePage})}">&laquo;</a>
+    <span th:each="i : ${#numbers.sequence(1, totalPages)}">
+        <a href="#" th:href="@{/board( kind=${kind}, page=${i})}" th:text="${i}" th:class="${page == i ? 'active' : ''}"></a>
+    </span>
+    <a href="#" th:unless="${page == totalPages}" th:href="@{/board( kind=${kind}, page=${nextPage})}">&raquo;</a>
+</div>
+
+<a href="#" th:href="@{/board/create(kind=${kind})}" class="create-button">작성하기</a>
+</body>
+<script th:replace="header :: script"></script>
+<script th:inline="javascript">
+    const nodeList = document.querySelectorAll(".board-line");
+
+    nodeList.forEach(element =>{
+        /*<![CDATA[*/
+        const kind = /*[[${kind}]]*/ '';
+        /*]]>*/
+        const number = element.querySelector("#boardNumber").innerText;
+        element.addEventListener("click",()=>{
+            window.location.href ="/board/"+number+"?kind="+kind;
+        })
+    })
+</script>
+
+
+
+</html>

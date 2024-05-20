@@ -1,0 +1,154 @@
+<!DOCTYPE html >
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/header.css">
+</head>
+<body>
+    <section>
+        <header >
+            <div class="side">
+            </div>
+            <div class="head-main">
+
+               <div class="login-container">
+                   <div sec:authorize="isAuthenticated()">
+                       <p>Welcome, <span sec:authentication="name"></span>!
+                           <a id = "logout" class="logout">Logout</a>
+                           <input type="hidden" id="_csrf" name="_csrf" th:value="${_csrf.token}"/>
+                       </p>
+
+                   </div>
+                   <div sec:authorize="!isAuthenticated()">
+                       <a th:href="@{/login}">
+                           <p>
+                               Login
+                           </p>
+                       </a>
+                   </div>
+
+                    <a href="/login">
+                        <p>
+                            로그인
+                        </p>
+                    </a>
+               </div>
+                <div class="header-right-side">
+                </div>
+
+            </div>
+
+        </header>
+        <nav class="head-nav">
+            <div class="side">
+            </div>
+            <div class="nav-title">
+                타이틀
+            </div>
+            <div class="nav-container">
+                <div class="mouse-hover-a" id="report-center">
+                    민원신고센터
+                    <div class="nav-container-tag">
+                        <div class="side"></div>
+                        <div class="nav-container-tag-flex">
+                            <div>
+                                <div class="nav-container-tag-title">
+                                    <p>민원안내</p>
+                                </div>
+                                <ul class="nav-container-tag-list">
+                                    <li>민원안내</li>
+                                    <li>교육행정서비스현장 </li>
+                                </ul>
+                            </div>
+                            <div>
+                                <div class="nav-container-tag-title">
+                                    <p>신고센터</p>
+                                </div>
+                                <ul class="nav-container-tag-list">
+                                    <li>대전교육신문고</li>
+                                    <li>학교폭력 성폭력 신고 </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="side"></div>
+                    </div>
+                </div>
+                <div class="mouse-hover-a">
+                    참여제안
+                    <div class="nav-container-tag">
+                        <div class="side"></div>
+                        <div class="nav-container-tag-flex">
+                            <div>
+                                <div class="nav-container-tag-title">
+                                    <p>직원소통방</p>
+                                </div>
+                                <ul class="nav-container-tag-list">
+                                    <li>칭찬합시다</li>
+                                    <li>교육감에게 바란다 </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="side"></div>
+                    </div>
+                </div>
+                <div class="mouse-hover-a">
+                    정보마당
+                    <div class="nav-container-tag">
+                        <div class="side"></div>
+                        <div class="nav-container-tag-flex">
+                            <div>
+                                <div class="nav-container-tag-title">
+                                    <p>소식알림방</p>
+                                </div>
+                                <ul class="nav-container-tag-list">
+                                    <li><a href="/board?kind=notice">공지사항</a></li>
+                                    <li>고시공고</li>
+                                    <li>주간업무</li>
+                                    <li>대전교육신문고</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="side"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="side">
+            </div>
+        </nav>
+    </section>
+</body>
+
+<script>
+const tag_mouse_hover_a = document.querySelectorAll(".mouse-hover-a");
+tag_mouse_hover_a.forEach(element => {
+    element.addEventListener("mouseover",()=>{
+        const nav_container_tag = element.querySelector(".nav-container-tag")
+        nav_container_tag.style.display="block";
+    });
+
+    element.addEventListener("mouseout",()=>{
+        const nav_container_tag = element.querySelector(".nav-container-tag")
+        nav_container_tag.style.display="none";
+    });
+});
+
+const fn_logout = ()=>{
+    const csrf = document.querySelector("#_csrf").value;
+    fetch('/logout', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': csrf  // CSRF 토큰을 요청 헤더에 추가
+        }
+    }).then(window.location.reload());
+
+}
+
+document.querySelector("#logout").addEventListener("click",fn_logout);
+</script>
+
+</html>

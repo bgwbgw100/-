@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" >
+<head>
+    <meta charset="UTF-8">
+    <title>게시글 작성</title>
+    <style>
+
+        .container {
+            width: 80%;
+            margin: 0 auto;
+        }
+        input[type=text], textarea {
+            width: 100%;
+            padding: 8px;
+            margin: 10px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        input[type=submit] {
+            width: 100%;
+            background-color: #4CAF50;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        input[type=submit]:hover {
+            background-color: #45a049;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        .file-input-container {
+            margin-top: 10px;
+        }
+    </style>
+    <div th:replace="header :: link"></div>
+</head>
+<body>
+<div th:replace="header :: section"></div>
+<div class="container">
+
+    <h1>게시글 작성</h1>
+    <form th:action="@{/board/create(kind = ${kind})}" method="post" id ="boardForm">
+        <label for="title">제목</label>
+        <input type="text" id="title" name="title" required>
+        <label for="content">내용</label>
+        <textarea id="content" name="content" rows="4" required></textarea>
+            <input type="hidden" id="attachmentOx" name="attachmentOx" value="X">
+            <input type="hidden" id="saveFileName" name="saveFileName" value="">
+            <input type="hidden" id="orgFileName" name="orgFileName" value="">
+    </form>
+    <div class="file-input-container">
+        <label for="fileInput">첨부파일</label>
+        <input type="file" id="fileInput" name="file">
+        <button id="uploadCancel">X</button>
+    </div>
+    <input type="submit" id="submitButton" value="게시글 작성">
+</div>
+<input type="hidden" id="_csrf" name="_csrf" th:value="${_csrf.token}"/>
+
+
+
+<script>
+    document.getElementById('fileInput').addEventListener("change",uploadFile);
+    document.querySelector("#submitButton").addEventListener("click",submit);
+    document.querySelector("#uploadCancel").addEventListener("click",uploadCancel);
+
+
+    function uploadFile() {
+        const input = document.getElementById('fileInput');
+        const file = input.files[0]
+        const MAX_SIZE = 5 * 1024 * 1024;
+        if (file && file.size > MAX_SIZE) {
+            // 파일 크기 초과 경고
+            alert("파일 크기 초과");
+            // 파일 선택 초기화
+            input.value = "";
+            return;
+        }
+        const formData = new FormData();
+        const csrf = document.querySelector("#_csrf").value;
+        formData.append('file', file);
+        document.querySelector("#submitButton").disabled = true;
+
+
+        fetch('/board/file', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-TOKEN': csrf  // CSRF 토큰을 요청 헤더에 추가
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                document.querySelector("#saveFileName").value= data.saveFileName;
+                document.querySelector("#orgFileName").value= data.orgFileName;
+                document.querySelector("#attachmentOx").value = "O";
+                document.querySelector("#submitButton").disabled =false;
+            }).catch(error => {
+                document.querySelector("#saveFileName").value="";
+                document.querySelector("#orgFileName").value= "";
+                document.querySelector("#attachmentOx").value = "X";
+                document.querySelector("#fileInput").value ="";
+                document.querySelector("#submitButton").disabled = false;
+                alert("upload Fail")
+                console.error('Error:', error);
+
+            });
+    }
+
+    function uploadCancel(){
+        document.querySelector("#saveFileName").value="";
+        document.querySelector("#orgFileName").value= "";
+        document.querySelector("#attachmentOx").value = "X";
+        document.querySelector("#fileInput").value ="";
+        document.querySelector("#submitButton").disabled = false;
+    }
+
+    function submit(){
+        document.querySelector("#boardForm").submit();
+
+    }
+
+
+</script>
+
+<script th:replace="header :: script"></script>
+
+</body>
+</html>

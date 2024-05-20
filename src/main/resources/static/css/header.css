@@ -1,0 +1,114 @@
+.side{
+    width: 15%;
+    display: inline-block;
+}
+@media (max-width :1024px) {
+    .side{
+        width: 0;
+    }
+    .nav-container-tag{
+        position: absolute;
+        left: 0;
+        right: 0;
+    }
+}
+.head-main{
+    display: inline-flex;
+    background-color: #0b7583;
+    height: 100%;
+    width: 25%;
+
+    flex-direction: row;
+}
+.header-right-side{
+    background-color: #0b7583;
+    width: 15%;
+    height: 100%;
+}
+header{
+    background-color: #0a1064;
+    height: 50px;
+    text-align: right;
+
+}
+body{
+    margin: 0px;
+}
+.head-nav{
+    height: 150px;
+    font-size: 24px;
+}
+.nav-title{
+    display: inline-block;
+    width: 200px;
+    cursor: pointer;
+}
+
+.nav-step{
+    display: inline-block;
+}
+.nav-container{
+    display: inline-flex;
+    flex-direction: row;
+}
+.nav-container>div{
+    text-align: center;
+    width: 200px;
+}
+
+.mouse-hover-a:hover{
+    cursor: pointer;
+    color: rgb(20, 55, 119);
+    text-decoration: underline;
+}.mouse-hover-a{
+     padding: 10px;
+ }
+.nav-container-tag{
+    display: none;
+    position: absolute;
+    left: 0;
+    top: 100px;
+    background-color: rgba(0, 84, 157, 0.95);;
+    width: 100%;
+    text-align: left;
+
+}
+.nav-container-tag-title{
+    display: inline-block;
+    color: white;
+    background-color: #002850;
+    padding-left: 15px;
+    padding-right: 15px;
+
+}
+.nav-container-tag-list {
+    display: inline-block;
+}
+.nav-container-tag-list li {
+    display: inline-block;
+    margin-right: 20px;
+    font-size: 20px;
+    color: white;
+}
+.nav-container-tag-flex{
+    display: inline-flex;
+    flex-direction: column;
+}
+.login-container{
+    background-color: #0b7583;
+    margin-left: 10px;
+}
+a{
+    text-decoration: none;
+    color: white;
+}
+a:hover{
+    text-decoration: underline;
+}
+
+.logout{
+    margin-left: 20px;
+}
+.logout:hover{
+    cursor: pointer;
+}

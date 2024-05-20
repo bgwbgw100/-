@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko"
+        xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <title>게시글 상세</title>
+    <style>
+        .container {
+            width: 80%;
+            margin: 0 auto;
+        }
+        .content {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .button-container {
+            margin-top: 20px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .delete-button {
+            background-color: #f44336;
+        }
+        .delete-button:hover {
+            background-color: #e53935;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        .attachment {
+            margin: 10px 0;
+        }
+        .color-black{
+            color: black;
+        }
+    </style>
+    <div th:replace="header :: link"></div>
+</head>
+<body>
+<div th:replace="header :: section"></div>
+<div class="container">
+    <h1>게시글 상세</h1>
+    <div class="content">
+        <label for="title">제목</label>
+        <p id="title" th:text="${board.title}"></p>
+        <label for="content">내용</label>
+        <div id="content" th:utext="${board.content}"></div>
+        <div class="attachment" th:if="${board.attachmentOx == 'O'}">
+            <label for="attachment">첨부파일</label>
+            <a id="attachment" class="color-black" th:href="@{/board/file/download/{fileName}(fileName=${file.attachmentCode})}" th:text="${file.orgFileName}">첨부파일 이름</a>
+        </div>
+    </div>
+
+    <div class="button-container" sec:authorize="authentication.name == #vars.board.id">
+        <button id="editButton">수정</button>
+        <button class="delete-button" id="deleteButton">삭제</button>
+    </div>
+</div>
+<input type="hidden" id="_csrf" name="_csrf" th:value="${_csrf.token}"/>
+
+<script>
+    document.getElementById('editButton').addEventListener('click', function() {
+        window.location.href = "/board/update/[[${board.boardNumber}]]?kind=[[${kind}]]"
+    });
+
+    document.getElementById('deleteButton').addEventListener('click', function() {
+        const csrf = document.querySelector("#_csrf").value;
+        const confirmed = confirm('정말로 이 게시글을 삭제하시겠습니까?');
+        if (confirmed) {
+            fetch("/board/ [[${board.boardNumber}]]?kind=[[${kind}]]"  , {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': csrf,
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert('게시글이 삭제되었습니다.');
+                        window.location.href = '/board?kind=[[${kind}]]';
+                    } else {
+                        alert('게시글 삭제에 실패했습니다.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('게시글 삭제 중 오류가 발생했습니다.');
+                });
+        }
+    });
+</script>
+
+<script th:replace="header :: script"></script>
+
+</body>
+</html>
