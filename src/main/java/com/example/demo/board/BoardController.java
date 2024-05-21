@@ -5,8 +5,11 @@ import com.example.demo.file.FileUploadService;
 import com.example.demo.security.CustomUserDetails;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -20,6 +23,7 @@ import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 public class BoardController {
 
     private final BoardService boardService;
@@ -27,6 +31,9 @@ public class BoardController {
     private final FileUploadService fileUploadService;
 
     private final BoardValidator boardValidator;
+
+    private static final Logger logger = LoggerFactory.getLogger(BoardController.class);
+
 
     @GetMapping("board")
     public String board(@RequestParam(name = "kind",required = true) String kind, @RequestParam(name = "page",
@@ -192,6 +199,8 @@ public class BoardController {
             model.addAttribute("file", fileDTO);
         }
 
+        model.addAttribute("kind",kind);
+
         return "update";
     }
 
@@ -208,14 +217,18 @@ public class BoardController {
 
     @PutMapping("board/update/{number}")
     @ResponseBody
-    public ResponseEntity<String> boardUpdate(@PathVariable int number,@RequestParam("kind") String kind, @ModelAttribute BoardCreateRequest param, Authentication authentication){
-        if(!param.checkDeleteFile() || boardValidator.attachmentCheck(param)){
-            return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<String> boardUpdate(@PathVariable("number") int number,@RequestParam("kind") String kind, @RequestBody BoardCreateRequest param, Authentication authentication){
+
         String userId = getUserId(authentication);
+        if(!param.checkDeleteFile() || !boardValidator.attachmentCheck(param) ){
+            return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+
+        }
         if(userId == null || !boardValidator.boardUserCheck(number,kind,userId)){
             return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
         }
+
+        boardService.boardUpdate(number,kind,userId,param);
 
         return ResponseEntity.ok("success");
         }

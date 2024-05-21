@@ -19,7 +19,7 @@
             border-radius: 4px;
             box-sizing: border-box;
         }
-        input[type=submit] {
+        input[type=button] {
             width: 100%;
             background-color: #4CAF50;
             color: white;
@@ -29,7 +29,7 @@
             border-radius: 4px;
             cursor: pointer;
         }
-        input[type=submit]:hover {
+        input[type=button]:hover {
             background-color: #45a049;
         }
         label {
@@ -50,17 +50,17 @@
 <div class="container">
 
     <h1>게시글 수정</h1>
-    <form th:action="@{/board/update(kind=${kind}, id=${board.id})}" method="post" id="boardForm">
+    <form  method="post" id="boardForm">
         <label for="title">제목</label>
         <input type="text" id="title" name="title" th:value="${board.title}" required>
 
         <label for="content">내용</label>
         <textarea id="content" name="content" rows="4" th:text="${board.content}" required></textarea>
 
-        <input type="hidden" id="attachmentOx" name="attachmentOx" th:value="${board.attachmentOx}">
+        <input type="hidden" id="attachmentOx" name="attachmentOx"  th:value="${board.attachmentOx}" >
         <input type="hidden" id="saveFileName" name="saveFileName" th:value="${file.fileName}">
         <input type="hidden" id="orgFileName" name="orgFileName" th:value="${file.orgFileName}">
-        <input type="hidden" id="deleteFile" name="deleteFile" value="X">
+        <input type="hidden" id="deleteFile" name="deleteFile" value="X" th:if="${board.attachmentOx == 'O'}">
     </form>
     <div class="file-input-container" id="deleteFileContainer" th:if="${board.attachmentOx == 'O'}">
         <p>현재 파일</p>
@@ -73,8 +73,9 @@
         <button id="uploadCancel">X</button>
     </div>
 
-    <input type="submit" id="submitButton" value="게시글 수정">
+    <input type="button" id="submitButton" value="게시글 수정" onclick="submit">
 </div>
+
 
 <input type="hidden" id="_csrf" name="_csrf" th:value="${_csrf.token}"/>
 
@@ -85,6 +86,7 @@
     document.querySelector("#deleteFileButton").addEventListener("click",deleteFile);
 
     function uploadFile() {
+        document.querySelector("#submitButton").disabled = true;
         const input = document.getElementById('fileInput');
         const file = input.files[0];
         const MAX_SIZE = 5 * 1024 * 1024;
@@ -96,7 +98,7 @@
         const formData = new FormData();
         const csrf = document.querySelector("#_csrf").value;
         formData.append('file', file);
-        document.querySelector("#submitButton").disabled = true;
+
 
         fetch('/board/file', {
             method: 'POST',
@@ -111,10 +113,17 @@
                 document.querySelector("#orgFileName").value = data.orgFileName;
                 document.querySelector("#attachmentOx").value = "O";
                 document.querySelector("#submitButton").disabled = false;
+                if(document.querySelector("#deleteFile")){
+                    document.querySelector("#deleteFile").value="O";
+                }
+
             }).catch(error => {
             document.querySelector("#saveFileName").value = "";
             document.querySelector("#orgFileName").value = "";
             document.querySelector("#attachmentOx").value = "X";
+            if(document.querySelector("#deleteFile")){
+                document.querySelector("#attachmentOx").value = "O";
+            }
             document.querySelector("#fileInput").value = "";
             document.querySelector("#submitButton").disabled = false;
             alert("upload Fail");
@@ -128,15 +137,51 @@
         document.querySelector("#attachmentOx").value = "X";
         document.querySelector("#fileInput").value = "";
         document.querySelector("#submitButton").disabled = false;
+
+        if(document.querySelector("#deleteFile") && document.querySelector("#deleteFileButton")){
+            document.querySelector("#deleteFile").value="X";
+        }else if(document.querySelector("#deleteFile")){
+            document.querySelector("#deleteFile").value="O";
+        }
+
     }
 
     function submit() {
-        document.querySelector("#boardForm").submit();
+        const csrf = document.querySelector("#_csrf").value;
+        const form = document.querySelector("#boardForm");
+        const formData = new FormData(form);
+        const data = {};
+        formData.forEach((value, key) => {
+            data[key] = value;
+            console.log(key +"  " + value)
+        });
+        fetch(`/board/update/[[${board.boardNumber}]]?kind=[[${kind}]]`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrf
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => response)
+            .then(data => {
+                if(data.ok){
+                    window.location.href= "/board/[[${board.boardNumber}]]?kind=[[${kind}]]"
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
     }
 
     function deleteFile(){
         document.querySelector("#deleteFileContainer").innerHTML="";
         document.querySelector("#deleteFile").value="O";
+        if(document.querySelector("#fileInput").value){
+            document.querySelector("#attachmentOx").value="O";
+        }else{
+            document.querySelector("#attachmentOx").value="X";
+        }
     }
 </script>
 

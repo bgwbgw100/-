@@ -20,10 +20,11 @@ public class BoardCreateRequest {
     private String orgFileName;
     private String attachmentOx;
     private String id;
-    private String deleteFile;
+    private String deleteFile = "none";
 
     public boolean checkDeleteFile(){
-        return deleteFile.equals("O") || deleteFile.equals("X");
+
+        return deleteFile.equalsIgnoreCase("none") || deleteFile.equals("O") || deleteFile.equals("X") ;
     }
 
 }

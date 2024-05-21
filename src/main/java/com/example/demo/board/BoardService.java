@@ -4,6 +4,7 @@ import com.example.demo.file.FileDTO;
 import com.example.demo.file.FileMapper;
 import com.example.demo.file.FileUploadService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +15,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BoardService {
 
     private final BoardMapper boardMapper;
@@ -21,6 +23,8 @@ public class BoardService {
     private final FileUploadService fileUploadService;
 
     private final FileMapper fileMapper;
+
+    private static final int FILE_NULL_NUMBER = 0;
 
     public List<BoardDTO> getBoard(String kind, int page){
         page = (page-1) *10;
@@ -88,21 +92,40 @@ public class BoardService {
 
     @Transactional
     public void boardUpdate(int number,String kind,String id,BoardCreateRequest param){
-        if(param.getDeleteFile().equalsIgnoreCase("O")){
+        BoardDTO originalBoard = new BoardDTO();
+        originalBoard.setBoardNumber(number);
+        originalBoard.setBoardKind(kind);
+        originalBoard.setId(id);
+        originalBoard = boardMapper.detailBoard(originalBoard);
 
-        };
+        BoardDTO updateBoardDTO = new BoardDTO();
+        updateBoardDTO.setId(id);
+        updateBoardDTO.setBoardNumber(number);
+        updateBoardDTO.setBoardKind(kind);
+        updateBoardDTO.setContent(param.getContent());
+        updateBoardDTO.setAttachmentOx(param.getAttachmentOx());
+        updateBoardDTO.setTitle(param.getTitle());
+        updateBoardDTO.setAttachmentCode(originalBoard.getAttachmentCode());
 
-        BoardDTO boardDTO = new BoardDTO();
-        boardDTO.setId(id);
-        boardDTO.setBoardNumber(number);
-        boardDTO.setBoardKind(kind);
-        boardDTO.setContent(param.getContent());
-        boardDTO.setAttachmentOx(param.getAttachmentOx());
-        boardDTO.setTitle(param.getTitle());
-        if(boardDTO.getAttachmentOx().equalsIgnoreCase("O")){
+        boolean fileDelete = originalBoard.getAttachmentOx().equalsIgnoreCase("O") && param.getDeleteFile().equalsIgnoreCase("O");
 
+        updateBoardDTO.setAttachmentCode(fileDelete ? FILE_NULL_NUMBER :originalBoard.getAttachmentCode());
 
+        if(param.getAttachmentOx().equalsIgnoreCase("O")){
+            FileDTO fileDTO = new FileDTO();
+            fileDTO.setOrgFileName(param.getOrgFileName());
+            fileDTO.setFileName(param.getSaveFileName());
+            fileMapper.fileInsert(fileDTO);
+            updateBoardDTO.setAttachmentCode(fileDTO.getAttachmentCode());
         }
+
+        boardMapper.updateBoard(updateBoardDTO);
+
+        if(fileDelete){
+            fileMapper.deleteFile(originalBoard.getAttachmentCode());
+        }
+
+
 
     }
 
