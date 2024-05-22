@@ -2,14 +2,18 @@ package com.example.demo.board;
 
 import com.example.demo.file.FileDTO;
 import com.example.demo.file.FileUploadService;
+import com.example.demo.file.FileUploadUtil;
 import com.example.demo.security.CustomUserDetails;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -17,6 +21,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +38,8 @@ public class BoardController {
     private final FileUploadService fileUploadService;
 
     private final BoardValidator boardValidator;
+
+    private final FileUploadUtil fileUploadUtil;
 
     private static final Logger logger = LoggerFactory.getLogger(BoardController.class);
 
@@ -231,6 +240,26 @@ public class BoardController {
         boardService.boardUpdate(number,kind,userId,param);
 
         return ResponseEntity.ok("success");
+    }
+
+    @ResponseBody
+    @GetMapping("board/file/{number}")
+    public ResponseEntity<InputStreamResource> fileDownload(@PathVariable("number") int fileCode) throws FileNotFoundException {
+
+        FileDTO fileDTO = fileUploadService.fileDetail(fileCode);
+
+        File file = new File(fileUploadUtil.getUploadPath() + File.separator + fileDTO.getFileName());
+        if (!file.exists()) {
+            return ResponseEntity.notFound().build();
         }
 
+        InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileDTO.getOrgFileName()+ "\"")
+                .contentLength(file.length())
+                .body(resource);
     }
+
+}

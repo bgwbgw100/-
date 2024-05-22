@@ -1,12 +1,17 @@
 package com.example.demo.file;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
@@ -49,6 +54,12 @@ public class FileUploadService {
     public void dbFileUpload(FileDTO fileDTO)  {
         fileMapper.fileInsert(fileDTO);
     }
+
+    public FileDTO fileDetail(int fileCode){
+        return fileMapper.fileSelect(fileCode);
+    }
+
+
 
 
 

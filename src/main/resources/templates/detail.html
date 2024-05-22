@@ -61,7 +61,7 @@
         <div id="content" th:utext="${board.content}"></div>
         <div class="attachment" th:if="${board.attachmentOx == 'O'}">
             <label for="attachment">첨부파일</label>
-            <a id="attachment" class="color-black" th:href="@{/board/file/download/{fileName}(fileName=${file.attachmentCode})}" th:text="${file.orgFileName}">첨부파일 이름</a>
+            <a id="attachment" class="color-black" th:href="@{/board/file/{fileCode}(fileCode=${file.attachmentCode})}" th:text="${file.orgFileName}">첨부파일 이름</a>
         </div>
     </div>
 
