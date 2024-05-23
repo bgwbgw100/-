@@ -122,12 +122,13 @@ public class BoardController {
     }
 
     @PostMapping("board/create")
-    public String create(@RequestParam("kind") String kind, @ModelAttribute BoardCreateRequest param, Authentication authentication){
+    public String create(@RequestParam("kind") String kind, @ModelAttribute BoardCreateRequest param, Authentication authentication,Model model){
         String userId = getUserId(authentication);
 
         param.setId(userId);
         if(!boardValidator.attachmentCheck(param)){
-            //업로드한 파일에 문제가 있습니다.
+            model.addAttribute("status" , 400);
+            model.addAttribute("message", "업로드한 파일에 문제가 있습니다.");
             return "error";
         }
 
@@ -172,10 +173,10 @@ public class BoardController {
     @ResponseBody
     public ResponseEntity<String> boardDelete(@PathVariable("number") int number,@RequestParam("kind") String kind,Authentication authentication){
         String userId = getUserId(authentication);
+
         if(userId == null || !boardValidator.boardUserCheck(number,kind,userId)){
             return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
         }
-
 
         boardService.boardDelete(number,kind,userId);
 
@@ -185,9 +186,6 @@ public class BoardController {
     @GetMapping("board/update/{number}")
     public String boardUpdate(@PathVariable("number") int number, @RequestParam("kind") String kind,Authentication authentication,Model model){
         String userId = getUserId(authentication);
-        if(userId == null){
-            return "author";
-        }
 
         if(!boardValidator.boardUserCheck(number, kind, userId)){
             return "auth";
@@ -243,6 +241,7 @@ public class BoardController {
     }
 
     @ResponseBody
+
     @GetMapping("board/file/{number}")
     public ResponseEntity<InputStreamResource> fileDownload(@PathVariable("number") int fileCode) throws FileNotFoundException {
 
@@ -252,7 +251,6 @@ public class BoardController {
         if (!file.exists()) {
             return ResponseEntity.notFound().build();
         }
-
         InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
 
         return ResponseEntity.ok()
