@@ -90,7 +90,6 @@
         <input type="text" class="menuName" placeholder="메뉴 영어 이름" required>
         <input type="text" class="korName" placeholder="메뉴 한국 이름" required>
         <input type="text" class="kind" placeholder="메뉴 종류" required>
-        <input type="number" class="menuLevel" placeholder="레벨" required>
         <input type="text" class="parentNumber" placeholder="상위 메뉴 번호 (없으면 비워두세요)">
         <button onclick="addMenu()">메뉴 추가</button>
     </div>
@@ -135,20 +134,10 @@
         const menuName = menuIdElement.querySelector(".menuName").value;
         const korName = menuIdElement.querySelector(".korName").value;
         const kind = menuIdElement.querySelector(".kind").value;
-        const menuLevel = menuIdElement.querySelector(".menuLevel").value;
         const parentNumber = menuIdElement.querySelector(".parentNumber").value;
-        if(menuLevel){
-            if(!positiveIntegerRegex.test(menuLevel)){
-               alert("메뉴 레벨에 숫자를 입력하세요");
-                return;
-            }
 
-        }else{
-            alert("메뉴 레벨을 입력하세요");
-            return;
-        }
         if(parentNumber){
-            if(positiveIntegerRegex.test(parentNumber)){
+            if(!positiveIntegerRegex.test(parentNumber)){
                 alert("상위 메뉴 번호에 숫자를 입력하세요");
                 return;
             }
@@ -161,7 +150,6 @@
             ,body : JSON.stringify({
                 "name" : menuName
                 ,"kind" : kind
-                ,"level" : menuLevel
                 ,"parentNumber" : parentNumber
                 ,"korName" : korName
             })

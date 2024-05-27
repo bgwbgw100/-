@@ -10,11 +10,10 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
-public class AdminService {
+public class AdminMenuService {
 
     private final MenuMapper menuMapper;
     private final MenuService menuService;

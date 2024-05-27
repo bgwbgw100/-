@@ -3,26 +3,20 @@ package com.example.demo.admin;
 
 import com.example.demo.menu.MenuDTO;
 import com.example.demo.menu.MenuMapper;
-import com.example.demo.menu.MenuService;
-import lombok.RequiredArgsConstructor;
-import org.apache.ibatis.annotations.Param;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.stream.Stream;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 
-public class MenuServiceTest {
+public class AdminMenuServiceTest {
 
     @Autowired
-    AdminService adminService;
+    AdminMenuService adminMenuService;
     @Autowired
     MenuMapper menuMapper;
 
@@ -38,7 +32,7 @@ public class MenuServiceTest {
         param.setLevel(0);
         param.setKorName("테스트");
 
-        adminService.addMenu(param);
+        adminMenuService.addMenu(param);
         MenuDTO selectMenu = menuMapper.selectOneMenu(param);
         assertThat(param.getMenuNumber()).isEqualTo(selectMenu.getMenuNumber());
         assertThat(param.getName()).isEqualTo(selectMenu.getName());
@@ -57,13 +51,13 @@ public class MenuServiceTest {
         add.setKind("BOARD");
         add.setLevel(0);
         add.setKorName("테스트");
-        adminService.addMenu(add);
+        adminMenuService.addMenu(add);
 
         MenuDTO param = new MenuDTO();
         param.setMenuNumber(add.getMenuNumber());
         param.setName("testUpdate");
         param.setKorName("테스트업데이트");
-        adminService.updateMenu(param);
+        adminMenuService.updateMenu(param);
 
         MenuDTO updateDTO = menuMapper.selectOneMenu(param);
 
@@ -84,12 +78,12 @@ public class MenuServiceTest {
         add.setKind("BOARD");
         add.setLevel(0);
         add.setKorName("테스트");
-        adminService.addMenu(add);
+        adminMenuService.addMenu(add);
 
         MenuDTO param = new MenuDTO();
         param.setMenuNumber(add.getMenuNumber());
 
-        adminService.deleteMenu(param);
+        adminMenuService.deleteMenu(param);
 
         MenuDTO delete = menuMapper.selectOneMenu(param);
 

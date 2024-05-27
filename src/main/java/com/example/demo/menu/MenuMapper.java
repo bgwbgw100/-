@@ -21,7 +21,15 @@ public interface MenuMapper  {
 
     @Insert("""
     INSERT INTO menu(name, parent_number, level, kor_name, kind)
-     VALUES(#{data.name},if(#{data.parentNumber} = 0 , NULL, #{data.parentNumber}),#{data.level},#{data.korName},#{data.kind})
+    SELECT  #{data.name} as name
+            ,if(#{data.parentNumber} = 0 , NULL, #{data.parentNumber}) as parent_number
+            ,if(#{data.parentNumber} = 0,0,(
+                SELECT level+1
+                FROM menu
+                WHERE menu_number = #{data.parentNumber}
+            )) as level
+            ,#{data.korName} as kor_name
+            ,#{data.kind} as kind
     """)
     @Options(useGeneratedKeys = true, keyProperty = "menuNumber")
     void insertMenu(@Param("data") MenuDTO menuDTO);
@@ -51,5 +59,18 @@ public interface MenuMapper  {
     WHERE menu_number = #{data.menuNumber}
     """)
     MenuDTO selectOneMenu(@Param("data") MenuDTO menuDTO);
+
+    @Select("""
+    SELECT menu_number as menuNumber
+           ,name
+           ,parent_number as parentNumber
+           ,level
+           ,kor_name as korName
+           ,kind
+    FROM menu
+    WHERE menu_number = #{parentNumber}
+    """)
+    MenuDTO selectOneMenuByParentNumber(@Param("parentNumber") int parentNumber);
+
 
 }
