@@ -4,6 +4,8 @@ import com.example.demo.file.FileDTO;
 import com.example.demo.file.FileUploadService;
 import com.example.demo.file.FileUploadUtil;
 import com.example.demo.security.CustomUserDetails;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +29,7 @@ import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -155,8 +158,10 @@ public class BoardController {
     }
 
     @GetMapping("board/{number}")
-    public String boardDetail(@PathVariable("number") int number,@RequestParam("kind") String kind,Model model){
-        List<DetailDTO> detailDTOS = boardService.boardDetail(number, kind);
+    public String boardDetail(@PathVariable("number") int number, @RequestParam("kind") String kind, Model model, HttpSession session){
+
+
+        List<DetailDTO> detailDTOS = boardService.boardDetail(number, kind, Optional.of(session));
         detailDTOS.forEach(detailDTO -> {
             if(detailDTO instanceof BoardDTO){
                 model.addAttribute("board",detailDTO);
@@ -191,7 +196,7 @@ public class BoardController {
             return "auth";
         }
 
-        List<DetailDTO> detailDTOS = boardService.boardDetail(number, kind);
+        List<DetailDTO> detailDTOS = boardService.boardDetail(number, kind,Optional.empty());
         detailDTOS.forEach(detailDTO -> {
             if(detailDTO instanceof BoardDTO){
                 model.addAttribute("board",detailDTO);

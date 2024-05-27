@@ -3,6 +3,8 @@ package com.example.demo.board;
 import com.example.demo.file.FileDTO;
 import com.example.demo.file.FileMapper;
 import com.example.demo.file.FileUploadService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -55,7 +57,24 @@ public class BoardService {
         boardMapper.createBoard(boardDTO);
     }
 
-    public List<DetailDTO> boardDetail(int number, String kind){
+    public List<DetailDTO> boardDetail(int number, String kind, Optional<HttpSession> sessionOptional){
+
+        if(sessionOptional.isPresent()){
+            HttpSession session = sessionOptional.get();
+            String sessionKey = "board_"+kind+"_"+String.valueOf(number);
+
+            Long lastViewedTime = (Long) session.getAttribute(sessionKey);
+            long currentTime = System.currentTimeMillis();
+
+            if (lastViewedTime == null || (currentTime - lastViewedTime > 5 * 60 * 1000)) {
+                BoardDTO boardDTO = BoardDTO.builder().boardKind(kind).boardNumber(number).build();
+                boardMapper.updateViews(boardDTO);
+                session.setAttribute(sessionKey, currentTime);
+            }
+        }
+
+
+
         List<DetailDTO> resultList = new ArrayList<>();
         BoardDTO boardDTO = new BoardDTO();
         boardDTO.setBoardNumber(number);

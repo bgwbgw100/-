@@ -103,6 +103,15 @@ public interface BoardMapper {
     """)
     void updateBoard(@Param("data") BoardDTO boardDTO);
 
+    @Update("""
+    
+    UPDATE board
+    SET     views = views+1
+    WHERE board_number = #{data.boardNumber}
+    AND   board_kind = #{data.boardKind}
+    """)
+    void updateViews(@Param("data") BoardDTO boardDTO);
+
 
 
 }
