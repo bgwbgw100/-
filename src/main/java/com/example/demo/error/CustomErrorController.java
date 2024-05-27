@@ -45,9 +45,11 @@ public class CustomErrorController implements ErrorController {
 
             model.addAttribute("status", request.getAttribute("status"));
 
-            model.addAttribute("message", request.getAttribute("message"));
-
         }
+        if(request.getAttribute("message") != null){
+            model.addAttribute("message", request.getAttribute("message"));
+        }
+
 
         return "error";
     }

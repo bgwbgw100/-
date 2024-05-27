@@ -38,6 +38,7 @@ public class CustomUserDetailService implements UserDetailsService {
         }
 
         authorityList.add(new SimpleGrantedAuthority("ROLE_USER"));
+
         if(resultUser.getPower().equals("A")){
             authorityList.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
         }

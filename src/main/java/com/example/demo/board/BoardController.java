@@ -199,6 +199,8 @@ public class BoardController {
                 model.addAttribute("file",detailDTO);
             }
         });
+
+
         if(model.getAttribute("file") == null){
             FileDTO fileDTO  = new FileDTO();
             fileDTO.setFileName("");

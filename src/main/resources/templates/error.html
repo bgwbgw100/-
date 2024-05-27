@@ -52,7 +52,7 @@
 <body>
 <div class="container">
 
-    <h1 th:text="${status} + '  ' + ${message}"></h1>
+    <h1 th:text="${status} + '  ' + ${message ?: '에러'}"></h1>
     <div class="buttons">
         <a href="/">홈페이지</a>
         <a >관리자 이메일 ddddddd@asd.com</a>

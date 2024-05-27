@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>메뉴 관리</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            position: fixed;
+            height: 100%;
+            padding-top: 20px;
+        }
+        .sidebar a {
+            padding: 15px;
+            text-decoration: none;
+            font-size: 18px;
+            color: white;
+            display: block;
+        }
+        .sidebar a:hover {
+            background-color: #1abc9c;
+        }
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+            width: 100%;
+        }
+        .header {
+            background-color: #34495e;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+        .menu-form {
+            margin: 20px 0;
+        }
+        .menu-form input, .menu-form select {
+            padding: 10px;
+            margin: 5px 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .menu-list {
+            margin-top: 20px;
+        }
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background-color: #ecf0f1;
+            margin: 5px 0;
+        }
+        .menu-item button {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .menu-update{
+            display: none;
+        }
+    </style>
+
+</head>
+<body>
+<div class="sidebar">
+    <a href="/admin/home">대시보드</a>
+    <a href="/admin/users">사용자 관리</a>
+    <a href="/admin/management/menu">메뉴 관리</a>
+    <a href="/admin/boards">게시판 관리</a>
+    <a href="/admin/logout">로그아웃</a>
+</div>
+
+<div class="content">
+    <div class="header">
+        <h1>메뉴 관리</h1>
+    </div>
+    <div class="menu-form" id="menu-add">
+        <h2>메뉴 추가 </h2>
+        <input type="text" class="menuName" placeholder="메뉴 영어 이름" required>
+        <input type="text" class="korName" placeholder="메뉴 한국 이름" required>
+        <input type="text" class="kind" placeholder="메뉴 종류" required>
+        <input type="number" class="menuLevel" placeholder="레벨" required>
+        <input type="text" class="parentNumber" placeholder="상위 메뉴 번호 (없으면 비워두세요)">
+        <button onclick="addMenu()">메뉴 추가</button>
+    </div>
+
+    <div class="menu-form menu-update" id="menu-update">
+        <h2>메뉴 수정 <button onclick="button_menu_add()">메뉴 추가</button></h2>
+        <input type="text" class="menuNumber" placeholder="메뉴 번호" required disabled>
+        <input type="text" class="menuName" placeholder="메뉴 이름" required>
+        <input type="text" class="korName" placeholder="메뉴 한국 이름" required>
+        <input type="text" class="kind" placeholder="메뉴 종류" required>
+        <input type="number" class="menuLevel" placeholder="레벨" required disabled>
+        <input type="text" class="parentNumber" placeholder="상위 메뉴 번호 (없으면 비워두세요)" required disabled>
+        <button onclick="updateMenu()">메뉴 수정</button>
+    </div>
+
+    <div class="menu-list" id="menu-list">
+        <h2>메뉴 목록</h2>
+
+        <div th:each="menu : ${menuList}">
+            <span class="menu-list-text" th:text="${menu.name} +' (종류:' + ${menu.kind} +', 레벨:'+ ${menu.level} +', 상위 메뉴:' + ${menu.parentNumber} + ')'"></span>
+            <button onclick="deleteMenu(this)">삭제</button>
+            <input type="hidden" th:value="${menu.menuNumber}" class="menu-number">
+            <input type="hidden" th:value="${menu.name}" class="menu-name">
+            <input type="hidden" th:value="${menu.korName}" class="menu-kor-name">
+            <input type="hidden" th:value="${menu.level}" class="menu-level">
+            <input type="hidden" th:value="${menu.parentNumber}?: ''" class="menu-parent-number">
+            <input type="hidden" th:value="${menu.kind}" class="menu-kind">
+
+        </div>
+    </div>
+</div>
+<input type="hidden" id="_csrf" name="_csrf" th:value="${_csrf.token}"/>
+
+<script>
+    for (const element of document.querySelectorAll(".menu-list-text")) {
+        element.addEventListener("click",click_menu_list)
+    }
+
+    const positiveIntegerRegex = /^\d+$/;
+    function addMenu() {
+        const menuIdElement = document.querySelector("#menu-add")
+        const menuName = menuIdElement.querySelector(".menuName").value;
+        const korName = menuIdElement.querySelector(".korName").value;
+        const kind = menuIdElement.querySelector(".kind").value;
+        const menuLevel = menuIdElement.querySelector(".menuLevel").value;
+        const parentNumber = menuIdElement.querySelector(".parentNumber").value;
+        if(menuLevel){
+            if(!positiveIntegerRegex.test(menuLevel)){
+               alert("메뉴 레벨에 숫자를 입력하세요");
+                return;
+            }
+
+        }else{
+            alert("메뉴 레벨을 입력하세요");
+            return;
+        }
+        if(parentNumber){
+            if(positiveIntegerRegex.test(parentNumber)){
+                alert("상위 메뉴 번호에 숫자를 입력하세요");
+                return;
+            }
+        }
+
+        const csrf = document.querySelector("#_csrf").value;
+
+        fetch("/admin/management/menu",{
+            method : "POST"
+            ,body : JSON.stringify({
+                "name" : menuName
+                ,"kind" : kind
+                ,"level" : menuLevel
+                ,"parentNumber" : parentNumber
+                ,"korName" : korName
+            })
+            ,headers : {
+                'X-CSRF-TOKEN': csrf  // CSRF 토큰을 요청 헤더에 추가
+                ,'Content-Type': 'application/json'
+            }
+        }).then( response => {
+                if(response.ok){
+                    window.location.reload();
+                }else{
+                    console.error("error", response.statusText)
+                }
+            })
+            .catch(err => console.error("error" ,err))
+
+    }
+
+    function deleteMenu(button) {
+        if(!confirm(document.querySelector(".menu-name").value + "메뉴룰 삭제하시겠습니까?")){
+            return
+        }
+        const menuNumber = button.parentElement.querySelector(".menu-number").value;
+
+        const csrf = document.querySelector("#_csrf").value;
+
+        fetch("/admin/management/menu",{
+            method : "DELETE"
+            ,body : JSON.stringify({
+                "menuNumber" : menuNumber
+            })
+            ,headers : {
+                'X-CSRF-TOKEN': csrf  // CSRF 토큰을 요청 헤더에 추가
+                ,'Content-Type': 'application/json'
+            }
+        }).then( response => {
+            if(response.ok){
+                window.location.reload();
+            }else{
+                console.error("error", response.statusText)
+            }
+        })
+            .catch(err => console.error("error" ,err))
+    }
+
+
+
+    function updateMenu(){
+        const menuIdElement = document.querySelector("#menu-update")
+        const menuNumber = menuIdElement.querySelector(".menuNumber").value;
+        const menuName = menuIdElement.querySelector(".menuName").value;
+        const korName = menuIdElement.querySelector(".korName").value;
+
+        const csrf = document.querySelector("#_csrf").value;
+
+        fetch("/admin/management/menu",{
+            method : "PUT"
+            ,body : JSON.stringify({
+                "menuNumber" : menuNumber
+                ,"name" : menuName
+                ,"korName" : korName
+            })
+            ,headers : {
+                'X-CSRF-TOKEN': csrf  // CSRF 토큰을 요청 헤더에 추가
+                ,'Content-Type': 'application/json'
+            }
+        }).then( response => {
+            if(response.ok){
+                window.location.reload();
+            }else{
+                console.error("error", response.statusText)
+            }
+        })
+            .catch(err => console.error("error" ,err))
+
+    }
+
+    function click_menu_list(target){
+
+        const targetParent = target.target.parentElement;
+        const menuNumber = targetParent.querySelector(".menu-number").value;
+        const menuName = targetParent.querySelector(".menu-name").value;
+        const menuKorName = targetParent.querySelector(".menu-kor-name").value;
+        const menuLevel = targetParent.querySelector(".menu-level").value;
+        const menuParentNumber = targetParent.querySelector(".menu-parent-number").value;
+        const menuKind = targetParent.querySelector(".menu-kind").value;
+
+        const menuUpdateElement = document.querySelector("#menu-update");
+
+
+
+        menuUpdateElement.querySelector(".menuNumber").value = menuNumber;
+        menuUpdateElement.querySelector(".menuName").value = menuName
+        menuUpdateElement.querySelector(".korName").value = menuKorName
+        menuUpdateElement.querySelector(".menuLevel").value = menuLevel
+        menuUpdateElement.querySelector(".parentNumber").value = menuParentNumber
+        menuUpdateElement.querySelector(".kind").value = menuKind
+
+        document.querySelector("#menu-add").style.display="none";
+        document.querySelector("#menu-update").style.display="block";
+
+
+    }
+
+    function button_menu_add(){
+        document.querySelector("#menu-add").style.display="block";
+        document.querySelector("#menu-update").style.display="none";
+    }
+
+</script>
+
+</body>
+
+</html>

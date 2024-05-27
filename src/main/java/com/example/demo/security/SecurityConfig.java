@@ -43,9 +43,12 @@ public class SecurityConfig  {
                                 ,AntPathRequestMatcher.antMatcher("/**/create/**")
                                 ,AntPathRequestMatcher.antMatcher("/**/delete/**")
                         ).authenticated()
+                        .requestMatchers(AntPathRequestMatcher.antMatcher("/admin/**")).hasAnyRole("ADMIN")
                         .anyRequest().permitAll()
+
+
         );
-        // create update delete 로그인 체크 설정하기
+
         return http.build();
     }
 
