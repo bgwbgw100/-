@@ -20,6 +20,7 @@ public interface BoardMapper {
             FROM BOARD
             WHERE board_kind = #{kind}
             AND   delete_ox = 'X'
+            AND   blind_ox = 'X'
             ORDER BY board_kind, board_number DESC
             LIMIT 10 OFFSET #{page};
             """)
@@ -78,6 +79,7 @@ public interface BoardMapper {
         WHERE board_number = #{data.boardNumber}
         AND   board_kind = #{data.boardKind}
         AND   delete_ox = 'X'
+        AND   blind_ox = 'X'
     """)
     BoardDTO detailBoard(@Param("data") BoardDTO boardDTO);
 
@@ -87,6 +89,7 @@ public interface BoardMapper {
     WHERE board_kind = #{data.boardKind}
     AND   board_number= #{data.boardNumber}
     AND   id = #{data.id}
+    AND   blind_ox = 'X'
     """)
     void deleteBoard(@Param("data") BoardDTO boardDTO);
 
@@ -100,6 +103,7 @@ public interface BoardMapper {
     WHERE board_number = #{data.boardNumber}
     AND   board_kind = #{data.boardKind}
     AND   id = #{data.id}
+    AND   blind_ox = 'X'
     """)
     void updateBoard(@Param("data") BoardDTO boardDTO);
 
@@ -109,8 +113,41 @@ public interface BoardMapper {
     SET     views = views+1
     WHERE board_number = #{data.boardNumber}
     AND   board_kind = #{data.boardKind}
+    AND   blind_ox = 'X'
     """)
     void updateViews(@Param("data") BoardDTO boardDTO);
+
+    @Select("""
+    SELECT  board_number as boardNumber
+            ,board_kind as boardKind
+            ,id 
+            ,regist_time as registTime
+            ,title
+            ,attachment_ox as attachmentOx
+            ,views
+            ,blind_ox as blindOx
+            ,blind_time as blindTime
+    FROM board
+    WHERE board_kind = #{kind}
+    ORDER BY board_kind, board_number DESC
+    LIMIT 10 OFFSET #{page}
+    """)
+    List<BoardDTO> selectBoardListByKind(@Param("kind") String kind,@Param("page")int page);
+
+    @Select("""
+    SELECT  COUNT(*)
+    FROM board
+    WHERE board_kind = #{kind}
+    """)
+    int selectBoardCountByKind(@Param("kind") String kind);
+
+    @Update("""
+    UPDATE  board
+    SET     blind_ox = #{data.blindOx}
+    WHERE   board_kind = #{data.boardKind}
+    AND     board_number = #{data.boardNumber}
+    """)
+    void updateBoardBlind(@Param("data") BoardDTO boardDTO);
 
 
 

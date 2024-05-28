@@ -24,6 +24,8 @@ public class BoardDTO implements DetailDTO{
     private int views;
     private int attachmentCode;
     private String deleteOx;
+    private String blindOx;
+    private Date blindTime;
 
 
 

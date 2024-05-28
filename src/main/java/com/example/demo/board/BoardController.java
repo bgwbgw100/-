@@ -161,7 +161,15 @@ public class BoardController {
     public String boardDetail(@PathVariable("number") int number, @RequestParam("kind") String kind, Model model, HttpSession session){
 
 
-        List<DetailDTO> detailDTOS = boardService.boardDetail(number, kind, Optional.of(session));
+        Optional<List<DetailDTO>> optionalDetailDTOS  = boardService.boardDetail(number, kind, Optional.of(session));
+        if(optionalDetailDTOS.isEmpty()){
+            model.addAttribute("status",404);
+            model.addAttribute("message","잘못된 요청입니다.");
+            return "error";
+        }
+
+        List<DetailDTO> detailDTOS = optionalDetailDTOS.get();
+
         detailDTOS.forEach(detailDTO -> {
             if(detailDTO instanceof BoardDTO){
                 model.addAttribute("board",detailDTO);
@@ -196,7 +204,15 @@ public class BoardController {
             return "auth";
         }
 
-        List<DetailDTO> detailDTOS = boardService.boardDetail(number, kind,Optional.empty());
+        Optional<List<DetailDTO>> optionalDetailDTOS  = boardService.boardDetail(number, kind, Optional.empty());
+        if(optionalDetailDTOS.isEmpty()){
+            model.addAttribute("status",404);
+            model.addAttribute("message","잘못된 요청입니다.");
+            return "error";
+        }
+
+        List<DetailDTO> detailDTOS = optionalDetailDTOS.get();
+
         detailDTOS.forEach(detailDTO -> {
             if(detailDTO instanceof BoardDTO){
                 model.addAttribute("board",detailDTO);

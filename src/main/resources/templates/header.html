@@ -21,6 +21,9 @@
                        <p>Welcome, <span sec:authentication="name"></span>!
                            <a id = "logout" class="logout">Logout</a>
                            <input type="hidden" id="_csrf" name="_csrf" th:value="${_csrf.token}"/>
+                           <a sec:authorize="hasRole('ADMIN')" href="admin">
+                                ADMIN PAGE
+                           </a>
                        </p>
 
                    </div>
@@ -32,11 +35,6 @@
                        </a>
                    </div>
 
-                    <a href="/login">
-                        <p>
-                            로그인
-                        </p>
-                    </a>
                </div>
                 <div class="header-right-side">
                 </div>

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시판 관리</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            position: fixed;
+            height: 100%;
+            padding-top: 20px;
+        }
+        .sidebar a {
+            padding: 15px;
+            text-decoration: none;
+            font-size: 18px;
+            color: white;
+            display: block;
+        }
+        .sidebar a:hover {
+            background-color: #1abc9c;
+        }
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+            width: 100%;
+        }
+        .header {
+            background-color: #34495e;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #2c3e50;
+            color: white;
+        }
+        button {
+            padding: 10px;
+            background-color: #1abc9c;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #16a085;
+        }
+        select {
+            padding: 10px;
+            font-size: 16px;
+        }
+        .pagination {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            padding: 0;
+        }
+        .pagination li {
+            margin: 0 5px;
+        }
+        .pagination button {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+            color: black;
+            cursor: pointer;
+        }
+        .pagination button.active {
+            background-color: #1abc9c;
+            color: white;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+<div class="sidebar">
+    <a href="/admin/home">대시보드</a>
+    <a href="#users">사용자 관리</a>
+    <a href="/admin/management/menu">메뉴 관리</a>
+    <a href="#boards">게시판 관리</a>
+    <a href="#logout">로그아웃</a>
+</div>
+
+<div class="content">
+    <div class="header">
+        <h1>게시판 관리</h1>
+    </div>
+    <div id="boards">
+        <div class="toolbar">
+            <h2>게시글 목록</h2>
+            <select id="boardSelect" onchange="filterBoard(this)">
+                <option th:if="${#lists.isEmpty(menuList)}" disabled="disabled" selected="selected">게시판이 없습니다.</option>
+                <option th:each="menu : ${menuList}" th:value="${menu.name}" th:text="${menu.korName}" th:selected="${menu.name.toLowerCase() == kind.toLowerCase()}"></option>
+            </select>
+        </div>
+        <table>
+
+            <tr class="board-data-head">
+                <th>제목</th>
+                <th>작성자</th>
+                <th>날짜</th>
+                <th>상태</th>
+                <th>관리</th>
+            </tr>
+            <tr class="board-data-list" data-board=
+                    "free" th:each="board : ${boardList}">
+                <td th:text="${board.title}">첫 번째 게시글</td>
+                <td th:text="${board.id}">관리자</td>
+                <td th:text="${board.registTime}">2024-05-28</td>
+                <td th:if="${board.blindOx == 'X'}" >블라인드 비활성</td>
+                <td th:if="${board.blindOx == 'O'}" >블라인드 활성</td>
+
+                <td>
+                    <button class="blindButton" th:if="${board.blindOx == 'X'}">블라인드</button>
+                    <button class="blindButton" th:if="${board.blindOx == 'O'}">블라인드 해제</button>
+                    <input hidden="hidden" class="boardNumber" th:value="${board.boardNumber}">
+                    <input hidden="hidden" class="blindOx"  th:value="${board.blindOx}">
+                </td>
+
+            </tr>
+
+        </table>
+        <ul class="pagination" id="pagination"></ul>
+    </div>
+
+</div>
+
+<script>
+    let currentPage = [[${page}]];
+    let totalPage = [[${totalPage}]];
+    const csrf = "[[${_csrf.token}]]";
+
+    function blindClick(event) {
+        const boardNumber = event.target.parentNode.parentNode.querySelector(".boardNumber").value
+        const blind = event.target.parentNode.parentNode.querySelector(".blindOx").value
+        const blindOx = blind === "X" ? "O" : "X";
+        const boardKind =  document.querySelector("#boardSelect").value
+
+        fetch("/admin/management/board",{
+            method :"PUT"
+            ,body :JSON.stringify({
+                boardNumber : boardNumber,
+                boardKind : boardKind,
+                blindOx : blindOx
+            })
+            ,headers : {
+                'X-CSRF-TOKEN': csrf
+                ,'Content-Type': 'application/json'
+            }
+        }).then(response => {
+            if (response.ok){
+                window.location.href = "/admin/management/board?kind="+boardKind+"&page="+currentPage;
+            }else {
+                console.error("error",response.json())
+            }
+        }).catch(err =>{
+            console.error("error",err);
+            }
+        );
+
+    }
+
+    function filterBoard(select) {
+        window.location.href = "/admin/management/board?kind="+select.value
+    }
+
+
+
+    function setupPagination(totalPages) {
+        const pagination = document.getElementById('pagination');
+
+        pagination.innerHTML = '';
+
+
+        for (let i = parseInt(currentPage/10)*10 +1; i <= totalPages && i<= parseInt(currentPage/10)*10 +10  ; i++) {
+            const btn = document.createElement('button');
+            btn.innerText = i;
+            if (i === currentPage) btn.classList.add('active');
+
+            btn.addEventListener('click', (event) => {
+
+                const kind = document.querySelector("#boardSelect").value;
+
+                window.location.href = "/admin/management/board?kind="+ kind + "&page=" +event.target.innerText
+            });
+
+            const li = document.createElement('li');
+            li.appendChild(btn);
+            pagination.appendChild(li);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        setupPagination(totalPage);
+        document.querySelectorAll(".blindButton").forEach(el =>{
+            el.addEventListener("click",blindClick);
+        })
+    });
+
+
+</script>
+</body>
+</html>

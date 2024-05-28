@@ -57,7 +57,27 @@ public class BoardService {
         boardMapper.createBoard(boardDTO);
     }
 
-    public List<DetailDTO> boardDetail(int number, String kind, Optional<HttpSession> sessionOptional){
+    public Optional<List<DetailDTO>> boardDetail(int number, String kind, Optional<HttpSession> sessionOptional){
+
+
+
+
+
+        List<DetailDTO> resultList = new ArrayList<>();
+        BoardDTO boardDTO = new BoardDTO();
+        boardDTO.setBoardNumber(number);
+        boardDTO.setBoardKind(kind);
+        BoardDTO resultBoard = boardMapper.detailBoard(boardDTO);
+        if(resultBoard == null){
+            return Optional.empty();
+        }
+
+        resultList.add(resultBoard);
+
+        if(resultBoard.getAttachmentOx()!= null && resultBoard.getAttachmentOx().equalsIgnoreCase("O")){
+            FileDTO resultFile = fileMapper.fileSelect(resultBoard.getAttachmentCode());
+            resultList.add(resultFile);
+        };
 
         if(sessionOptional.isPresent()){
             HttpSession session = sessionOptional.get();
@@ -67,28 +87,14 @@ public class BoardService {
             long currentTime = System.currentTimeMillis();
 
             if (lastViewedTime == null || (currentTime - lastViewedTime > 5 * 60 * 1000)) {
-                BoardDTO boardDTO = BoardDTO.builder().boardKind(kind).boardNumber(number).build();
-                boardMapper.updateViews(boardDTO);
+                BoardDTO viewBoardDTO = BoardDTO.builder().boardKind(kind).boardNumber(number).build();
+                boardMapper.updateViews(viewBoardDTO);
                 session.setAttribute(sessionKey, currentTime);
             }
         }
 
 
-
-        List<DetailDTO> resultList = new ArrayList<>();
-        BoardDTO boardDTO = new BoardDTO();
-        boardDTO.setBoardNumber(number);
-        boardDTO.setBoardKind(kind);
-        BoardDTO resultBoard = boardMapper.detailBoard(boardDTO);
-        resultList.add(resultBoard);
-
-        if(resultBoard.getAttachmentOx()!= null && resultBoard.getAttachmentOx().equalsIgnoreCase("O")){
-            FileDTO resultFile = fileMapper.fileSelect(resultBoard.getAttachmentCode());
-            resultList.add(resultFile);
-        };
-
-
-        return resultList;
+        return Optional.of(resultList);
 
     }
 
