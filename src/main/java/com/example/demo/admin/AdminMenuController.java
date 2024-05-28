@@ -35,7 +35,7 @@ public class AdminMenuController {
     public ResponseEntity<String> createMenu(@RequestBody MenuDTO menuDTO){
 
         if(!adminMenuValidator.menuInsertCheck(menuDTO)){
-          return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
         };
 
         adminMenuService.addMenu(menuDTO);
@@ -55,6 +55,10 @@ public class AdminMenuController {
     @DeleteMapping("management/menu")
     @ResponseBody
     public ResponseEntity<String> deleteMenu(@RequestBody MenuDTO menuDTO){
+
+        if(!adminMenuValidator.menuDeleteCheck(menuDTO)){
+            return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+        }
 
         adminMenuService.deleteMenu(menuDTO);
 

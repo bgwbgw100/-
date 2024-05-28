@@ -169,10 +169,22 @@
     }
 
     function deleteMenu(button) {
+        const menuNumber = button.parentElement.querySelector(".menu-number").value;
+
+        let nodeListOf = document.querySelector("#menu-list").querySelectorAll(".menu-parent-number");
+
+        for (const element of nodeListOf) {
+            if(Number(element.value) === Number(menuNumber)){
+                alert("하위 메뉴가 있어 삭제할수 없습니다");
+                return;
+            }
+        }
+
+
         if(!confirm(document.querySelector(".menu-name").value + "메뉴룰 삭제하시겠습니까?")){
             return
         }
-        const menuNumber = button.parentElement.querySelector(".menu-number").value;
+
 
         const csrf = document.querySelector("#_csrf").value;
 

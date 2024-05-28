@@ -72,5 +72,28 @@ public interface MenuMapper  {
     """)
     MenuDTO selectOneMenuByParentNumber(@Param("parentNumber") int parentNumber);
 
+    @Select("""
+    SELECT menu_number as menuNumber
+           ,name
+           ,parent_number as parentNumber
+           ,level
+           ,kor_name as korName
+           ,kind
+    FROM menu
+    WHERE kind = #{kind}
+    """)
+    List<MenuDTO> selectMenuByKind(@Param("kind") String kind);
+
+    @Select("""
+    SELECT menu_number as menuNumber
+           ,name
+           ,parent_number as parentNumber
+           ,level
+           ,kor_name as korName
+           ,kind
+    FROM menu
+    WHERE parent_number = #{menuNumber}
+    """)
+    List<MenuDTO> selectChildMenu(@Param("menuNumber") int menuNumber);
 
 }
