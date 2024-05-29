@@ -28,11 +28,18 @@
 
                    </div>
                    <div sec:authorize="!isAuthenticated()">
-                       <a th:href="@{/login}">
-                           <p>
-                               Login
-                           </p>
-                       </a>
+                       <p>
+                           <a th:href="@{/login}">
+
+                                   Login
+
+                           </a>
+                           <a th:href="@{/signup}">
+
+                                   회원가입
+
+                           </a>
+                       </p>
                    </div>
 
                </div>

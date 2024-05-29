@@ -1,6 +1,5 @@
 package com.example.demo.user;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 
-public class UserServiceTest {
+public class UserDTOServiceTest {
 
     @Autowired
     private UserMapper userMapper;
@@ -20,13 +19,13 @@ public class UserServiceTest {
     private PasswordEncoder passwordEncoder;
     @Test
     public void Login(){
-        User user = new User();
-        user.setId("admin");
-        user.setPassword("admin" );
-        User loginUser = userMapper.findById(user);
-        String id = loginUser.getId();
-        assertThat(loginUser.getLoginTry()).isLessThan(5);
-        assertThat(id).isEqualTo(user.getId());
-        assertTrue(passwordEncoder.matches(user.getPassword(), loginUser.getPassword()));
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId("admin");
+        userDTO.setPassword("admin" );
+        UserDTO loginUserDTO = userMapper.findById(userDTO);
+        String id = loginUserDTO.getId();
+        assertThat(loginUserDTO.getLoginTry()).isLessThan(5);
+        assertThat(id).isEqualTo(userDTO.getId());
+        assertTrue(passwordEncoder.matches(userDTO.getPassword(), loginUserDTO.getPassword()));
     }
 }

@@ -6,6 +6,7 @@ import com.example.demo.file.FileUploadUtil;
 import com.example.demo.security.CustomUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -125,7 +126,7 @@ public class BoardController {
     }
 
     @PostMapping("board/create")
-    public String create(@RequestParam("kind") String kind, @ModelAttribute BoardCreateRequest param, Authentication authentication,Model model){
+    public String create(@RequestParam("kind") String kind, @Valid @ModelAttribute BoardCreateRequest param, Authentication authentication, Model model){
         String userId = getUserId(authentication);
 
         param.setId(userId);
@@ -247,7 +248,7 @@ public class BoardController {
 
     @PutMapping("board/update/{number}")
     @ResponseBody
-    public ResponseEntity<String> boardUpdate(@PathVariable("number") int number,@RequestParam("kind") String kind, @RequestBody BoardCreateRequest param, Authentication authentication){
+    public ResponseEntity<String> boardUpdate(@PathVariable("number") int number,@RequestParam("kind") String kind,@Valid @RequestBody BoardCreateRequest param, Authentication authentication){
 
         String userId = getUserId(authentication);
         if(!param.checkDeleteFile() || !boardValidator.attachmentCheck(param) ){
@@ -264,7 +265,6 @@ public class BoardController {
     }
 
     @ResponseBody
-
     @GetMapping("board/file/{number}")
     public ResponseEntity<InputStreamResource> fileDownload(@PathVariable("number") int fileCode) throws FileNotFoundException {
 
