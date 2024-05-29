@@ -1,6 +1,8 @@
 package com.example.demo.board;
 
 
+import com.example.demo.mybatis.CustomPagingLanguageDriver;
+import com.example.demo.util.CommonPaging;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -149,6 +151,53 @@ public interface BoardMapper {
     """)
     void updateBoardBlind(@Param("data") BoardDTO boardDTO);
 
+    @Select("""
+            SELECT  board_number as boardNumber
+                    ,board_kind as boardKind
+                    ,id 
+                    ,regist_time as registTime
+                    ,title
+                    ,attachment_ox as attachmentOx
+                    ,views
+            FROM BOARD
+            WHERE board_kind = #{kind}
+            AND   delete_ox = 'X'
+            AND   blind_ox = 'X'
+            ORDER BY board_kind, board_number DESC
+            """)
+    @Lang(CustomPagingLanguageDriver.class)
+    List<BoardDTO> selectTestPaging(@Param("page") int page,@Param("kind") String kind);
 
+    @Select("""
+            SELECT  board_number as boardNumber
+                    ,board_kind as boardKind
+                    ,id 
+                    ,regist_time as registTime
+                    ,title
+                    ,attachment_ox as attachmentOx
+                    ,views
+            FROM BOARD
+            WHERE board_kind = 'notice'
+            AND   delete_ox = 'X'
+            AND   blind_ox = 'X'
+            ORDER BY board_kind, board_number DESC
+            """)
+    List<BoardDTO> selectTestPagingInterceptor(CommonPaging commonPaging);
+
+    @Select("""
+            SELECT  board_number as boardNumber
+                    ,board_kind as boardKind
+                    ,id 
+                    ,regist_time as registTime
+                    ,title
+                    ,attachment_ox as attachmentOx
+                    ,views
+            FROM BOARD
+            WHERE board_kind = 'notice'
+            AND   delete_ox = 'X'
+            AND   blind_ox = 'X'
+            ORDER BY board_kind, board_number DESC
+            """)
+    List<BoardDTO> selectTestPagingInterceptor2(@Param("page") CommonPaging commonPaging);
 
 }

@@ -1,6 +1,7 @@
 package com.example.demo.user;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.ibatis.session.SqlSession;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 public class UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final SqlSession sqlSession;
 
     public void createUser(UserDTO userDTO){
         String encodePassword = passwordEncoder.encode(userDTO.getPassword());
