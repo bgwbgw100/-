@@ -99,7 +99,7 @@ public class QueryInterceptor implements Interceptor {
 
 
         // SQL에 LIMIT와 OFFSET 구문 추가
-        return new StringBuilder().append(script).append(" LIMIT ").append(commonPagingDTO.getPostPage()).append(" OFFSET ").append(commonPagingDTO.getPerPage() - 1).toString();
+        return new StringBuilder().append(script).append(" LIMIT ").append(commonPagingDTO.getPostPage()).append(" OFFSET ").append((commonPagingDTO.getPerPage() - 1)*commonPagingDTO.getPostPage()).toString();
     }
     private String applyCount(String script){
         StringBuilder builder = new StringBuilder();

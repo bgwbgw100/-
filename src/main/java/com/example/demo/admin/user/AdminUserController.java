@@ -22,6 +22,8 @@ public class AdminUserController {
 
     @RequestMapping("user")
     public String user(@ModelAttribute("user")UserDTO userDTO, @ModelAttribute("page") CommonPagingDTO page, Model model){
+
+        page.setPostPage(5);
         CustomTwoReturn<List<UserDTO>, CommonPagingDTO> twoReturn = adminUserService.getAllUser(userDTO,page);
         List<UserDTO> userList = twoReturn.getType1();
 

@@ -85,6 +85,29 @@
         .search-bar button:hover {
             background-color: #16a085;
         }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            padding: 20px 0;
+        }
+
+        .pagination a {
+            color: black;
+            float: left;
+            padding: 8px 16px;
+            text-decoration: none;
+            transition: background-color .3s;
+            border: 1px solid #ddd; /* Gray */
+            margin: 0 4px;
+        }
+
+        .pagination a.active {
+            background-color: #4CAF50;
+            color: white;
+            border: 1px solid #4CAF50;
+        }
+
+        .pagination a:hover:not(.active) {background-color: #ddd;}
     </style>
 </head>
 <body>
@@ -134,15 +157,16 @@
             <!-- 추가 사용자 목록은 여기에 -->
         </table>
     </div>
-</div>
-
-<div class="pagination">
-    <a href="#" th:unless="${page.perPage == 1}" th:href="@{/admin/management/user(perPage=${prePage})}">&laquo;</a>
-    <span th:each="i : ${#numbers.sequence(page.startDisplayPage, page.endDisplayPage)}">
+    <div class="pagination">
+        <a href="#" th:unless="${page.perPage == 1}" th:href="@{/admin/management/user(perPage=${page.prePage})}">&laquo;</a>
+        <span th:each="i : ${#numbers.sequence(page.startDisplayPage, page.endDisplayPage)}">
         <a href="#" th:href="@{/admin/management/user( perPage=${i})}" th:text="${i}" th:class="${page == i ? 'active' : ''}"></a>
     </span>
-    <a href="#" th:unless="${page == page.maxPage}" th:href="@{/admin/management/user(perPage=${nextPage})}">&raquo;</a>
+        <a href="#" th:unless="${page == page.maxPage}" th:href="@{/admin/management/user(perPage=${page.nextPage})}">&raquo;</a>
+    </div>
+
 </div>
+
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
