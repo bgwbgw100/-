@@ -117,36 +117,33 @@
                 <th>비밀번호 초기화</th>
             </tr>
             <!-- 이 부분은 서버에서 동적으로 사용자 목록을 생성하는 곳입니다 -->
-            <tr>
-                <td>1</td>
-                <td>홍길동</td>
-                <td>hong@example.com</td>
+            <tr th:each="user : ${userList}">
+                <td th:text="${user.id}"></td>
+                <td th:text="${user.name}">홍길동</td>
+                <td th:text="${user.email}">hong@example.com</td>
                 <td>
                     <select>
-                        <option value="user">사용자</option>
-                        <option value="admin">관리자</option>
+                        <option value="user" th:selected="${user.power == 'B'}">사용자</option>
+                        <option value="admin" th:selected="${user.power == 'A'}">관리자</option>
                     </select>
                     <button class="btn">변경</button>
                 </td>
                 <td><button class="btn">초기화</button></td>
             </tr>
-            <tr>
-                <td>2</td>
-                <td>김철수</td>
-                <td>kim@example.com</td>
-                <td>
-                    <select>
-                        <option value="user">사용자</option>
-                        <option value="admin">관리자</option>
-                    </select>
-                    <button class="btn">변경</button>
-                </td>
-                <td><button class="btn">초기화</button></td>
-            </tr>
+
             <!-- 추가 사용자 목록은 여기에 -->
         </table>
     </div>
 </div>
+
+<div class="pagination">
+    <a href="#" th:unless="${page.perPage == 1}" th:href="@{/admin/management/user(perPage=${prePage})}">&laquo;</a>
+    <span th:each="i : ${#numbers.sequence(page.startDisplayPage, page.endDisplayPage)}">
+        <a href="#" th:href="@{/admin/management/user( perPage=${i})}" th:text="${i}" th:class="${page == i ? 'active' : ''}"></a>
+    </span>
+    <a href="#" th:unless="${page == page.maxPage}" th:href="@{/admin/management/user(perPage=${nextPage})}">&raquo;</a>
+</div>
+
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         const resetButtons = document.querySelectorAll(".btn");

@@ -2,7 +2,7 @@ package com.example.demo.board;
 
 
 import com.example.demo.mybatis.CustomPagingLanguageDriver;
-import com.example.demo.util.CommonPaging;
+import com.example.demo.util.CommonPagingDTO;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -182,7 +182,7 @@ public interface BoardMapper {
             AND   blind_ox = 'X'
             ORDER BY board_kind, board_number DESC
             """)
-    List<BoardDTO> selectTestPagingInterceptor(CommonPaging commonPaging);
+    List<BoardDTO> selectTestPagingInterceptor(CommonPagingDTO commonPagingDTO);
 
     @Select("""
             SELECT  board_number as boardNumber
@@ -198,6 +198,6 @@ public interface BoardMapper {
             AND   blind_ox = 'X'
             ORDER BY board_kind, board_number DESC
             """)
-    List<BoardDTO> selectTestPagingInterceptor2(@Param("page") CommonPaging commonPaging);
+    List<BoardDTO> selectTestPagingInterceptor2(@Param("page") CommonPagingDTO commonPagingDTO,String kind);
 
 }

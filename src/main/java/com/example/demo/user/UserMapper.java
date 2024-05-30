@@ -1,10 +1,14 @@
 package com.example.demo.user;
 
 
+import com.example.demo.util.CommonPagingDTO;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.springframework.security.core.parameters.P;
+
+import java.util.List;
 
 @Mapper
 public interface UserMapper {
@@ -33,6 +37,22 @@ public interface UserMapper {
             LIMIT 1
             """)
     int selectUserByEmailCheck(@Param("user") UserDTO userDTO);
+
+    @Select("""
+            <script>
+            SELECT  id
+                    ,name
+                    ,email
+                    ,delete_ox as deleteOx
+                    ,delete_dt as deleteDt
+                    ,regist_dt as registDt
+                    ,last_login as lastLogin
+                ,power
+            FROM user
+            WHERE 1=1
+            </script>
+    """)
+    List<UserDTO> selectAllUser(@Param("user") UserDTO userDTO, @Param("page")CommonPagingDTO commonPagingDTO);
 
 
 }
