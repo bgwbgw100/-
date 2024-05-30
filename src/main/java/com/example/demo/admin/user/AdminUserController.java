@@ -4,10 +4,10 @@ import com.example.demo.user.UserDTO;
 import com.example.demo.util.CommonPagingDTO;
 import com.example.demo.util.CustomTwoReturn;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -31,6 +31,23 @@ public class AdminUserController {
 
 
         return "admin/management/user";
+    }
+
+    @PutMapping("user/power")
+    @ResponseBody
+    public ResponseEntity<String> changePower(@RequestBody UserDTO userDTO){
+
+        adminUserService.changePower(userDTO);
+
+        return ResponseEntity.ok("success");
+    }
+
+    @PutMapping("user/reset")
+
+    @ResponseBody
+    public ResponseEntity<String> passwordReset(@RequestBody UserDTO userDTO){
+        adminUserService.passwordReset(userDTO);
+        return ResponseEntity.ok("success");
     }
 
 

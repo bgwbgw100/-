@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 public class UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
-    private final SqlSession sqlSession;
 
     public void createUser(UserDTO userDTO){
         String encodePassword = passwordEncoder.encode(userDTO.getPassword());

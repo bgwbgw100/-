@@ -2,10 +2,7 @@ package com.example.demo.user;
 
 
 import com.example.demo.util.CommonPagingDTO;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 import org.springframework.security.core.parameters.P;
 
 import java.util.List;
@@ -55,4 +52,17 @@ public interface UserMapper {
     List<UserDTO> selectAllUser(@Param("user") UserDTO userDTO, @Param("page")CommonPagingDTO commonPagingDTO);
 
 
+    @Update("""
+        UPDATE user
+        SET    power = #{power}
+        WHERE id = #{id}
+    """)
+    void updatePower(UserDTO userDTO);
+
+    @Update("""
+        UPDATE user
+        SET    password = #{password}
+        WHERE id = #{id}
+    """)
+    void updatePassword(UserDTO userDTO);
 }
