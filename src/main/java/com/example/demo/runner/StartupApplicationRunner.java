@@ -28,5 +28,6 @@ public class StartupApplicationRunner implements ApplicationRunner {
             String menuName = menuDTO.getName();
             menuMap.put(menuName,menuDTO);
         }
+        menuService.menuSetting();
     }
 }

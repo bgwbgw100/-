@@ -1,4 +1,4 @@
-package com.example.demo.admin;
+package com.example.demo.admin.menu;
 
 import com.example.demo.menu.MenuDTO;
 import com.example.demo.menu.MenuMapper;

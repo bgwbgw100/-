@@ -89,8 +89,12 @@
         <h2>메뉴 추가 </h2>
         <input type="text" class="menuName" placeholder="메뉴 영어 이름" required>
         <input type="text" class="korName" placeholder="메뉴 한국 이름" required>
-        <input type="text" class="kind" placeholder="메뉴 종류" required>
-        <input type="text" class="parentNumber" placeholder="상위 메뉴 번호 (없으면 비워두세요)">
+        <select class="kind" required>
+            <option th:each="menuStorage : ${menuStorageList}"  th:value="${menuStorage.menu}" th:text="${menuStorage.menu}" th:data-step ="${menuStorage.step}" th:data-childCount="${menuStorage.childCount}"></option>
+        </select>
+        <select class="parentNumber" required>
+
+        </select>
         <button onclick="addMenu()">메뉴 추가</button>
     </div>
 
@@ -108,7 +112,7 @@
     <div class="menu-list" id="menu-list">
         <h2>메뉴 목록</h2>
 
-        <div th:each="menu : ${menuList}">
+        <div th:each="menu : ${menuList}" th:class="'menu'+${menu.menuNumber}">
             <span class="menu-list-text" th:text="${menu.name} +' (종류:' + ${menu.kind} +', 레벨:'+ ${menu.level} +', 상위 메뉴:' + ${menu.parentNumber} + ')'"></span>
             <button onclick="deleteMenu(this)">삭제</button>
             <input type="hidden" th:value="${menu.menuNumber}" class="menu-number">
@@ -117,13 +121,29 @@
             <input type="hidden" th:value="${menu.level}" class="menu-level">
             <input type="hidden" th:value="${menu.parentNumber}?: ''" class="menu-parent-number">
             <input type="hidden" th:value="${menu.kind}" class="menu-kind">
-
         </div>
     </div>
 </div>
 <input type="hidden" id="_csrf" name="_csrf" th:value="${_csrf.token}"/>
 
-<script>
+<script th:inline="javascript">
+    const eventChange = new Event('change', {
+        bubbles: true, // 이벤트가 버블링되도록 설정
+        cancelable: true // 이벤트가 취소될 수 있도록 설정
+    });
+
+    window.onload =()=>{
+        const addKind = document.querySelector("#menu-add").querySelector(".kind");
+
+        addKind.addEventListener("change",select_menu_kind)
+
+
+        addKind.dispatchEvent(eventChange);
+    };
+
+    const menuStorageList = [[${menuStorageList}]];
+    const menuList = [[${menuList}]];
+
     for (const element of document.querySelectorAll(".menu-list-text")) {
         element.addEventListener("click",click_menu_list)
     }
@@ -135,6 +155,15 @@
         const korName = menuIdElement.querySelector(".korName").value;
         const kind = menuIdElement.querySelector(".kind").value;
         const parentNumber = menuIdElement.querySelector(".parentNumber").value;
+
+        if(!menuName){
+            alert("메뉴이름을 입력해주세요");
+            return;
+        }
+        if(!korName){
+            alert("메뉴이름을 입력해주세요");
+            return;
+        }
 
         if(parentNumber){
             if(!positiveIntegerRegex.test(parentNumber)){
@@ -156,6 +185,8 @@
             ,headers : {
                 'X-CSRF-TOKEN': csrf  // CSRF 토큰을 요청 헤더에 추가
                 ,'Content-Type': 'application/json'
+
+
             }
         }).then( response => {
                 if(response.ok){
@@ -215,6 +246,15 @@
         const menuName = menuIdElement.querySelector(".menuName").value;
         const korName = menuIdElement.querySelector(".korName").value;
 
+        if(!menuName){
+            alert("메뉴이름을 입력해주세요");
+            return;
+        }
+        if(!korName){
+            alert("메뉴이름을 입력해주세요");
+            return;
+        }
+
         const csrf = document.querySelector("#_csrf").value;
 
         fetch("/admin/management/menu",{
@@ -248,9 +288,7 @@
         const menuLevel = targetParent.querySelector(".menu-level").value;
         const menuParentNumber = targetParent.querySelector(".menu-parent-number").value;
         const menuKind = targetParent.querySelector(".menu-kind").value;
-
         const menuUpdateElement = document.querySelector("#menu-update");
-
 
 
         menuUpdateElement.querySelector(".menuNumber").value = menuNumber;
@@ -271,6 +309,52 @@
         document.querySelector("#menu-update").style.display="none";
     }
 
+    function select_menu_kind(event){
+        //const stepValue = Number( event.target.selectedOptions[0].getAttribute("data-step"));
+
+        const menuValue = event.target.value;
+
+        const resultMenuStorageList = menuStorageList.filter(menu => menu.menu === menuValue  )
+
+        const step = resultMenuStorageList[0].step
+
+        if(step === 1){
+            const parentNumberEl = document.querySelector("#menu-add").querySelector(".parentNumber")
+            parentNumberEl.innerHTML = "";
+            parentNumberEl.innerHTML = '<option value="">없음</option>'
+        }else if(step === 2){
+            const parentNumberEl = document.querySelector("#menu-add").querySelector(".parentNumber")
+            const menuListFilter = menuList.filter(menu => menu.level === 1)
+            let str = "";
+            menuListFilter.forEach( menu =>{
+                str += `<option value="${menu.kind}">${menu.name}</option> \n`;
+            })
+            parentNumberEl.innerHTML = "";
+            parentNumberEl.innerHTML = str;
+        }else if(step === 0){
+            const parentNumberEl = document.querySelector("#menu-add").querySelector(".parentNumber")
+            const menuListFilter = menuList.filter(menu => menu.level === 2)
+            let str = "";
+            menuListFilter.forEach( menu =>{
+                str += `<option value=${menu.kind}">${menu.name}</option> \n`;
+            })
+            parentNumberEl.innerHTML = "";
+            parentNumberEl.innerHTML = str;
+        }
+
+        if(step !== 1 && document.querySelector("#menu-add").querySelector(".parentNumber").innerHTML === "" ){
+            alert("선택할수 있는 부모메뉴가 없습니다.")
+            const menuStorage = menuStorageList.filter(menu => menu.step === 1)[0]
+            const menu = menuStorage.menu;
+            for (let option of event.target.options) {
+                if(option.value === menu){
+                    option.selected =true;
+                }
+            }
+            event.target.dispatchEvent(eventChange);
+
+        }
+    }
 </script>
 
 </body>
