@@ -54,7 +54,7 @@ public class MenuService {
         });
 
         List<MenuDTO> step2 = menuDTOS.stream().filter(menuDTO -> menuDTO.getStep() == 2).toList();
-        step1.forEach(filterMenuDTO -> {
+        step2.forEach(filterMenuDTO -> {
             for (MenuDTO menuDTO : menuDTOS) {
                 if(menuDTO.getParentNumber() == filterMenuDTO.getMenuNumber()){
                     List<MenuDTO> childList ;

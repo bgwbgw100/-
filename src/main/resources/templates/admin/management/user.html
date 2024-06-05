@@ -111,13 +111,10 @@
     </style>
 </head>
 <body>
-<div class="sidebar">
-    <a href="/admin/home">대시보드</a>
-    <a href="#users">사용자 관리</a>
-    <a href="/admin/management/menu">메뉴 관리</a>
-    <a href="/admin/management/board">게시판 관리</a>
-    <a href="#logout">로그아웃</a>
-</div>
+<aside th:replace="/admin/side :: aside">
+
+</aside>
+
 
 <div class="content">
     <div class="header">
@@ -224,5 +221,7 @@
 
 
 </script>
+<script th:replace="/admin/side :: script"></script>
+
 </body>
 </html>

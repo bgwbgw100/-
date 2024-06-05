@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<aside class="sidebar">
+    <a href="/admin/home">대시보드</a>
+    <a href="/admin/management/user">사용자 관리</a>
+    <a href="/admin/management/menu">메뉴 관리</a>
+    <a href="/admin/management/board">게시판 관리</a>
+    <a id = "logout" class="logout" href="#">로그아웃</a>
+    <input type="hidden" id="_hidden_csrf" name="_csrf" th:value="${_csrf.token}"/>
+</aside>
+<script>
+    const fn_logout = ()=>{
+        const csrf = document.querySelector("#_hidden_csrf").value;
+        fetch('/logout', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': csrf  // CSRF 토큰을 요청 헤더에 추가
+            }
+        }).then(window.location.href="/index");
+    }
+    document.querySelector("#logout").addEventListener("click",fn_logout);
+</script>
+
+</body>
+</html>

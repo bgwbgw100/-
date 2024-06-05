@@ -32,7 +32,7 @@ public class UserController {
     }
 
     @PostMapping("signup")
-    public String createSignup(@Valid @ModelAttribute("user") UserDTO userDTO, BindingResult bindingResult){
+    public String createSignup(@Valid @ModelAttribute("user") UserDTO userDTO, BindingResult bindingResult,Model model){
 
         if(!userValidator.userDuplicationIdCheck(userDTO)){
             bindingResult.addError(new FieldError("userError","id","중복된 아이디입니다."));

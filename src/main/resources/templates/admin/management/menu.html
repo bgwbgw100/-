@@ -73,13 +73,9 @@
 
 </head>
 <body>
-<div class="sidebar">
-    <a href="/admin/home">대시보드</a>
-    <a href="/admin/users">사용자 관리</a>
-    <a href="/admin/management/menu">메뉴 관리</a>
-    <a href="/admin/boards">게시판 관리</a>
-    <a href="/admin/logout">로그아웃</a>
-</div>
+<aside th:replace="/admin/side :: aside">
+
+</aside>
 
 <div class="content">
     <div class="header">
@@ -165,12 +161,12 @@
             return;
         }
 
-        if(parentNumber){
-            if(!positiveIntegerRegex.test(parentNumber)){
-                alert("상위 메뉴 번호에 숫자를 입력하세요");
-                return;
-            }
-        }
+        // if(parentNumber){
+        //     if(!positiveIntegerRegex.test(parentNumber)){
+        //         alert("상위 메뉴 번호에 숫자를 입력하세요");
+        //         return;
+        //     }
+        // }
 
         const csrf = document.querySelector("#_csrf").value;
 
@@ -229,7 +225,8 @@
                 ,'Content-Type': 'application/json'
             }
         }).then( response => {
-            if(response.ok){
+
+            (response.ok){
                 window.location.reload();
             }else{
                 console.error("error", response.statusText)
@@ -324,19 +321,19 @@
             parentNumberEl.innerHTML = '<option value="">없음</option>'
         }else if(step === 2){
             const parentNumberEl = document.querySelector("#menu-add").querySelector(".parentNumber")
-            const menuListFilter = menuList.filter(menu => menu.level === 1)
+            const menuListFilter = menuList.filter(menu => menu.level === 0)
             let str = "";
             menuListFilter.forEach( menu =>{
-                str += `<option value="${menu.kind}">${menu.name}</option> \n`;
+                str += `<option value="${menu.menuNumber}">${menu.name}</option> \n`;
             })
             parentNumberEl.innerHTML = "";
             parentNumberEl.innerHTML = str;
         }else if(step === 0){
             const parentNumberEl = document.querySelector("#menu-add").querySelector(".parentNumber")
-            const menuListFilter = menuList.filter(menu => menu.level === 2)
+            const menuListFilter = menuList.filter(menu => menu.level === 1)
             let str = "";
             menuListFilter.forEach( menu =>{
-                str += `<option value=${menu.kind}">${menu.name}</option> \n`;
+                str += `<option value="${menu.menuNumber}">${menu.name}</option> \n`;
             })
             parentNumberEl.innerHTML = "";
             parentNumberEl.innerHTML = str;
@@ -356,7 +353,7 @@
         }
     }
 </script>
-
+<script th:replace="/admin/side :: script"></script>
 </body>
 
 </html>
