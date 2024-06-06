@@ -9,7 +9,7 @@ import java.util.List;
 
 @Mapper
 public interface UserMapper {
-    @Select("SELECT id,password,login_try as loginTry,power FROM USER WHERE id  = #{user.id}")
+    @Select("SELECT id,password,login_try as loginTry,power FROM user WHERE id  = #{user.id}")
     public UserDTO findById(@Param("user") UserDTO userDTO);
 
     @Insert("""

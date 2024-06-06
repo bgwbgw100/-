@@ -19,7 +19,7 @@ public interface BoardMapper {
                     ,title
                     ,attachment_ox as attachmentOx
                     ,views
-            FROM BOARD
+            FROM board
             WHERE board_kind = #{kind}
             AND   delete_ox = 'X'
             AND   blind_ox = 'X'
@@ -30,7 +30,7 @@ public interface BoardMapper {
 
 
     @Insert("""
-            insert into BOARD
+            insert into board
             ( 
             board_number
             ,board_kind
@@ -57,7 +57,7 @@ public interface BoardMapper {
                 'X',
                  IF(#{data.attachmentCode} = 0, NULL, #{data.attachmentCode})
             FROM
-                BOARD
+                board
             WHERE
                 board_kind = #{data.boardKind};
             """)
@@ -176,7 +176,7 @@ public interface BoardMapper {
                     ,title
                     ,attachment_ox as attachmentOx
                     ,views
-            FROM BOARD
+            FROM board
             WHERE board_kind = 'notice'
             AND   delete_ox = 'X'
             AND   blind_ox = 'X'
@@ -192,7 +192,7 @@ public interface BoardMapper {
                     ,title
                     ,attachment_ox as attachmentOx
                     ,views
-            FROM BOARD
+            FROM board
             WHERE board_kind = 'notice'
             AND   delete_ox = 'X'
             AND   blind_ox = 'X'
