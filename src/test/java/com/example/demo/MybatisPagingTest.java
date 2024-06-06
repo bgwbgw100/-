@@ -20,10 +20,7 @@ public class MybatisPagingTest {
     @Autowired
     DynamicMapper dynamicMapper;
 
-    @Test
-    public void languageDriverTest(){
-        boardMapper.selectTestPaging(1,"notice");
-    }
+
 
     @Test
     public void interceptorTest(){

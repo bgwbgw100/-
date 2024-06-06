@@ -44,7 +44,6 @@ public class FileUtilTest {
 
     }
 
-    @Test
     public void pathDirCheck(String path){
         Path rootLocation = Paths.get(path);
         try {
