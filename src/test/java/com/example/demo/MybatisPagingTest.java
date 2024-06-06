@@ -37,7 +37,7 @@ public class MybatisPagingTest {
         };
         CustomTwoReturn<List<BoardDTO>, CommonPagingDTO> execute = new CommonPagingExecute<List<BoardDTO>>().execute(commonPagingExecuteImp,dynamicMapper);
         CommonPagingDTO commonPagingDTO = execute.getType2();
-        log.info(commonPagingDTO.getQuery());
+
 
     }
 
