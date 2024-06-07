@@ -103,7 +103,7 @@ tag_mouse_hover_a.forEach(element => {
             headers: {
                 'X-CSRF-TOKEN': csrf  // CSRF 토큰을 요청 헤더에 추가
             }
-        }).then(window.location.reload);
+        }).then(response => window.location.reload());
     }
     document.querySelector("#logout").addEventListener("click",fn_logout);
 </script>
