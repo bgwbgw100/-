@@ -73,7 +73,7 @@
 
 </head>
 <body>
-<aside th:replace="/admin/side :: aside">
+<aside th:replace="~{/admin/side :: aside}">
 
 </aside>
 
@@ -226,7 +226,7 @@
             }
         }).then( response => {
 
-            (response.ok){
+            if(response.ok){
                 window.location.reload();
             }else{
                 console.error("error", response.statusText)
@@ -353,7 +353,7 @@
         }
     }
 </script>
-<script th:replace="/admin/side :: script"></script>
+<script th:replace="~{/admin/side :: script}"></script>
 </body>
 
 </html>
