@@ -15,9 +15,7 @@ import java.util.List;
 @Controller
 @RequestMapping("admin")
 @RequiredArgsConstructor
-public class
-
-AdminMenuController {
+public class AdminMenuController {
 
     private final AdminMenuService adminMenuService;
 
