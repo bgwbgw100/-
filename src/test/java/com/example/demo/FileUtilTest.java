@@ -46,6 +46,7 @@ public class FileUtilTest {
 
     public void pathDirCheck(String path){
         Path rootLocation = Paths.get(path);
+        System.out.println(path);
         try {
             Files.createDirectories(rootLocation);
         } catch (IOException e) {
