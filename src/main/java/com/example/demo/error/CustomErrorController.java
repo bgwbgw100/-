@@ -1,13 +1,19 @@
 package com.example.demo.error;
 
+import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.WebRequest;
 
@@ -21,11 +27,13 @@ public class CustomErrorController implements ErrorController {
     private final ErrorAttributes errorAttributes;
 
     @RequestMapping("/error")
-    public String handleError(HttpServletRequest request, WebRequest webRequest, Model model) {
+    public String handleError(HttpServletRequest request, WebRequest webRequest, Model model, HttpServletResponse response) {
         Map<String, Object> errorDetails = errorAttributes.getErrorAttributes(webRequest, ErrorAttributeOptions.defaults());
         errorDetails.get("status");
 
         Integer status = (Integer) errorDetails.get("status");
+
+        response.setStatus(status);
 
         if(status == 404) {
 
@@ -44,6 +52,7 @@ public class CustomErrorController implements ErrorController {
         if(request.getAttribute("status") != null){
 
             model.addAttribute("status", request.getAttribute("status"));
+            response.setStatus(Integer.parseInt(request.getAttribute("status").toString()));
 
         }
         if(request.getAttribute("message") != null){

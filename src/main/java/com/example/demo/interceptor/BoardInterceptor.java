@@ -19,9 +19,13 @@ public class BoardInterceptor implements HandlerInterceptor {
 
         String boardKind = request.getParameter("kind");
         HashMap<String, MenuDTO> menuMap = MenuMap.menuMap;
+        String uri = request.getRequestURI();
+        if(uri.equals("/board/file")){
+            return true;
+        };
 
         if(boardKind == null || menuMap.get(boardKind) == null ){
-            request.setAttribute("status", 401);
+            request.setAttribute("status", 400);
             request.setAttribute("message", "잘못된 요청입니다");
             RequestDispatcher dispatcher = request.getRequestDispatcher("/error");
 

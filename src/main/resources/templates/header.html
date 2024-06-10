@@ -20,7 +20,7 @@
                    <div sec:authorize="isAuthenticated()">
                        <p>Welcome, <span sec:authentication="name"></span>!
                            <a id = "logout" class="logout">Logout</a>
-                           <input type="hidden" id="_csrf" name="_csrf" th:value="${_csrf.token}"/>
+                           <input type="hidden" id="header_csrf" name="header_csrf" th:value="${_csrf.token}"/>
                            <a sec:authorize="hasRole('ADMIN')" href="admin">
                                 ADMIN PAGE
                            </a>
@@ -97,7 +97,7 @@ tag_mouse_hover_a.forEach(element => {
 </script>
 <script sec:authorize="isAuthenticated()">
     const fn_logout = ()=>{
-        const csrf = document.querySelector("#_csrf").value;
+        const csrf = document.querySelector("#header_csrf").value;
         fetch('/logout', {
             method: 'POST',
             headers: {
