@@ -20,7 +20,7 @@ public class BoardInterceptor implements HandlerInterceptor {
         String boardKind = request.getParameter("kind");
         HashMap<String, MenuDTO> menuMap = MenuMap.menuMap;
         String uri = request.getRequestURI();
-        if(uri.equals("/board/file")){
+        if(uri.contains("/board/file")){
             return true;
         };
 
